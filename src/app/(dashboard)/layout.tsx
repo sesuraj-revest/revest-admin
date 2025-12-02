@@ -1,36 +1,30 @@
-"use client";
+// app/dashboard/layout.tsx
 
-import type React from "react";
-
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/core/lib/store";
-import { Sidebar } from "@/components/layout/sidebar";
+// biome-ignore assist/source/organizeImports: <explanation>
+import { redirect } from "next/navigation";
+import { auth } from "@/auth"; // your NextAuth export
 import { Topbar } from "@/components/layout/topbar";
+import { Sidebar } from "@/components/layout/sidebar";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const user = useAuthStore((state) => state.user);
-  const router = useRouter();
+  const session = await auth();
 
-  useEffect(() => {
-    if (!user) {
-      router.push("/login");
-    }
-  }, [user, router]);
+  // Optional: protect the route on server
+  if (!session) redirect("/"); // or show public layout
 
-  if (!user) {
-    return null;
-  }
+  // Make sure session is serializable — avoid Date/complex objects
+  const safeSession = JSON.parse(JSON.stringify(session));
 
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
       <Topbar />
-      <main className="lg:ml-72">{children}</main>
+      {/* header is a client component — receives only serializable props */}
+      <main>{children}</main>
     </div>
   );
 }

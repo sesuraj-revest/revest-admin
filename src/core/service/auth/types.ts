@@ -30,13 +30,12 @@ export type RegisterResponse = {
 // Internal User Interface (used in store)
 export interface User {
   id: string;
-  role_id?: string;
+  role?: string;
   email?: string;
-  name?: string;
+  full_name?: string;
   avatar?: string;
   modules?: string[];
   outlets?: Outlet[];
-  currentOutletId?: string;
   phone?: string;
 }
 

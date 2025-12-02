@@ -11,6 +11,7 @@ class AuthClass extends Api {
 
   login = async (data: LoginCredentials): Promise<LoginResponse> => {
     const dataResp = await this.post(`${this.resource}/login`, data);
+    console.log(dataResp, "dataRespdataResp");
     return dataResp;
   };
   register = async (data: RegisterCredentials): Promise<RegisterResponse> => {

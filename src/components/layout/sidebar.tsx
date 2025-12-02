@@ -1,75 +1,68 @@
-"use client"
+/** biome-ignore-all lint/a11y/useButtonType: <explanation> */
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
+"use client";
 
-import type React from "react"
-
-import { useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useAuthStore } from "@/core/lib/store"
-import { cn } from "@/core/lib/utils"
-import { Building2, UtensilsCrossed, Car, Settings, ChevronDown, Menu, X, Sparkles } from "lucide-react"
+import {
+  Building2,
+  Car,
+  ChevronDown,
+  Menu,
+  Settings,
+  Sparkles,
+  UtensilsCrossed,
+  X,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { auth } from "@/auth";
+import { useAuthStore } from "@/core/lib/store";
+import { cn } from "@/core/lib/utils";
 
 interface MenuItem {
-  label: string
-  icon: React.ReactNode
-  href: string
-  module: "hotel" | "restaurant" | "travel"
-  subItems?: { label: string; href: string }[]
+  label: string;
+  icon: React.ReactNode;
+  href: string;
+  subItems?: { label: string; href: string }[];
 }
 
 const MENU_ITEMS: MenuItem[] = [
   {
-    label: "Hotels",
+    label: "Products Management",
     icon: <Building2 className="w-5 h-5" />,
-    href: "/dashboard/hotels",
-    module: "hotel",
-    subItems: [
-      { label: "Categories", href: "/dashboard/hotels/categories" },
-      { label: "Amenities", href: "/dashboard/hotels/amenities" },
-      { label: "Rooms", href: "/dashboard/hotels/rooms" },
-      { label: "Bookings", href: "/dashboard/hotels/bookings" },
-    ],
+    href: "/products",
   },
-  {
-    label: "Restaurants",
-    icon: <UtensilsCrossed className="w-5 h-5" />,
-    href: "/dashboard/restaurants",
-    module: "restaurant",
-    subItems: [
-      { label: "Categories", href: "/dashboard/restaurants/categories" },
-      { label: "Sub Categories", href: "/dashboard/restaurants/sub-categories" },
-      { label: "Menu Items", href: "/dashboard/restaurants/menu-items" },
-      { label: "Orders", href: "/dashboard/restaurants/orders" },
-      { label: "KOT", href: "/dashboard/restaurants/kot" },
-    ],
-  },
-  {
-    label: "Travel Agencies",
-    icon: <Car className="w-5 h-5" />,
-    href: "/dashboard/travel",
-    module: "travel",
-    subItems: [{ label: "Vehicles", href: "/dashboard/travel/vehicles" }],
-  },
-]
+];
 
 export function Sidebar() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [expandedItems, setExpandedItems] = useState<string[]>([])
-  const pathname = usePathname()
-  const user = useAuthStore((state) => state.user)
+  const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState<any>();
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const pathname = usePathname();
+  const router = useRouter();
 
-  if (!user) return null
+  // if (!user) return null;
 
-  const userModules = new Set(user.modules)
-  const filteredItems = MENU_ITEMS.filter((item) => userModules.has(item.module))
+  const filteredItems = MENU_ITEMS;
+  const toggleSubmenu = (label: string, item: MenuItem) => {
+    if (item.href) {
+      router.push(item.href);
+    }
+    setExpandedItems((prev) =>
+      prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label]
+    );
+  };
 
-  const toggleSubmenu = (label: string) => {
-    setExpandedItems((prev) => (prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label]))
-  }
-
+  useEffect(() => {
+    async () => {
+      const session = await auth();
+      setUser(session?.user);
+    };
+  }, []);
   const isActive = (href: string) => {
-    return pathname === href || pathname.startsWith(href)
-  }
+    return pathname === href || pathname.startsWith(href);
+  };
 
   const sidebarContent = (
     <div className="flex flex-col h-full">
@@ -87,17 +80,23 @@ export function Sidebar() {
       <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-2">
         {filteredItems.map((item) => (
           <div key={item.label}>
+            {/** biome-ignore lint/a11y/useButtonType: <explanation> */}
             <button
-              onClick={() => toggleSubmenu(item.label)}
+              onClick={() => toggleSubmenu(item.label, item)}
               className={cn(
                 "w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300",
                 isActive(item.href)
                   ? "bg-gradient-to-r from-sidebar-primary/80 to-sidebar-primary/40 text-sidebar-primary-foreground shadow-lg shadow-primary/30 border border-sidebar-primary/50"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent/60 border border-transparent hover:border-sidebar-border/50",
+                  : "text-sidebar-foreground hover:bg-sidebar-accent/60 border border-transparent hover:border-sidebar-border/50"
               )}
             >
               <div className="flex items-center gap-3">
-                <div className={cn("transition-transform duration-300", isActive(item.href) && "scale-110")}>
+                <div
+                  className={cn(
+                    "transition-transform duration-300",
+                    isActive(item.href) && "scale-110"
+                  )}
+                >
                   {item.icon}
                 </div>
                 <span>{item.label}</span>
@@ -106,7 +105,7 @@ export function Sidebar() {
                 <ChevronDown
                   className={cn(
                     "w-4 h-4 transition-transform duration-300",
-                    expandedItems.includes(item.label) && "rotate-180",
+                    expandedItems.includes(item.label) && "rotate-180"
                   )}
                 />
               )}
@@ -122,7 +121,7 @@ export function Sidebar() {
                       "block px-3 py-2 rounded-lg text-sm transition-all duration-200",
                       isActive(subItem.href)
                         ? "bg-sidebar-primary/30 text-sidebar-foreground font-medium border border-sidebar-primary/30"
-                        : "text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent/40",
+                        : "text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent/40"
                     )}
                   >
                     {subItem.label}
@@ -141,7 +140,7 @@ export function Sidebar() {
             "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300",
             isActive("/dashboard/profile")
               ? "bg-gradient-to-r from-sidebar-primary/80 to-sidebar-primary/40 text-sidebar-primary-foreground shadow-lg shadow-primary/30 border border-sidebar-primary/50"
-              : "text-sidebar-foreground hover:bg-sidebar-accent/60 border border-transparent hover:border-sidebar-border/50",
+              : "text-sidebar-foreground hover:bg-sidebar-accent/60 border border-transparent hover:border-sidebar-border/50"
           )}
         >
           <Settings className="w-5 h-5" />
@@ -149,7 +148,7 @@ export function Sidebar() {
         </Link>
       </div>
     </div>
-  )
+  );
 
   return (
     <>
@@ -169,6 +168,7 @@ export function Sidebar() {
       {/* Mobile Sidebar */}
       {isOpen && (
         <>
+          {/** biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
           <div
             className="fixed inset-0 bg-black/60 z-30 lg:hidden animate-in fade-in duration-200"
             onClick={() => setIsOpen(false)}
@@ -179,5 +179,5 @@ export function Sidebar() {
         </>
       )}
     </>
-  )
+  );
 }

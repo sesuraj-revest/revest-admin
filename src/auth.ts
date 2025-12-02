@@ -14,22 +14,26 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           if (!credentials?.email || !credentials?.password) {
             return null;
           }
+          console.log("first");
 
           const response = await authApi.login({
             email: credentials.email as string,
             password: credentials.password as string,
           });
+          console.log(response, "responseresponse");
 
           if (response?.accessToken) {
             // Return user with token attached for JWT callback
             return {
               ...response.user,
+              name: response.user?.full_name,
               accessToken: response.accessToken,
-              refreshToken: response.refresh,
+              refreshToken: response.accessToken,
             };
           }
           return null;
         } catch (error) {
+          console.log(error, "at nextauth");
           return null;
         }
       },
@@ -42,6 +46,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.name = user.name;
         token.roleId = (user as any).role_id;
         token.accessToken = (user as any).accessToken;
         token.refreshToken = (user as any).refreshToken;
@@ -53,6 +58,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
     async session({ session, token }) {
+      console.log("Sessionupdate", session);
       if (token && session.user) {
         // session.user.id = token.id as string;
         // Add other properties to the session

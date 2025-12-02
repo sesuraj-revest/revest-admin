@@ -12,7 +12,7 @@ export async function loginAction(credentials: any) {
   try {
     await signIn("credentials", {
       ...credentials,
-      redirectTo: "/dashboard",
+      redirectTo: "/home",
     });
   } catch (error) {
     if (error instanceof AuthError) {
