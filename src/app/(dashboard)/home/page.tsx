@@ -55,10 +55,6 @@ export default function ProductsPage() {
           <h2 className="text-xl font-semibold text-foreground">
             Available Product Categories
           </h2>
-          <Button className="gap-2">
-            <Plus className="w-4 h-4" />
-            Add Category
-          </Button>
         </div>
 
         <Table>

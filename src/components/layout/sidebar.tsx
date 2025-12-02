@@ -3,6 +3,7 @@
 "use client";
 
 import {
+  Book,
   Building2,
   Car,
   ChevronDown,
@@ -32,6 +33,11 @@ const MENU_ITEMS: MenuItem[] = [
     label: "Products Management",
     icon: <Building2 className="w-5 h-5" />,
     href: "/products",
+  },
+  {
+    label: "Orders Management",
+    icon: <Book className="w-5 h-5" />,
+    href: "/orders",
   },
 ];
 

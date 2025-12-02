@@ -14,6 +14,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import Api from "@/core/service/api";
+import { AddProductDialog } from "@/components/products/AddProductDialog";
 
 // Adjust this to your setup:
 // - If your Next app is served from the same origin as orders-service (gateway),
@@ -46,17 +48,8 @@ export default function ProductsPage() {
       setLoading(true);
       setError(null);
 
-      const res = await fetch(`${API_BASE_URL}/products`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const data = await new Api().get("/products");
 
-      if (!res.ok) {
-        throw new Error(`Failed to load products: ${res.status}`);
-      }
-
-      const data = await res.json();
       setProducts(Array.isArray(data) ? data : []);
     } catch (err: any) {
       console.error(err);
@@ -165,10 +158,15 @@ export default function ProductsPage() {
               </p>
             )}
           </div>
-          <Button className="gap-2" onClick={handleAddProduct}>
+          {/* <Button className="gap-2" onClick={handleAddProduct}>
             <Plus className="w-4 h-4" />
             Add Product
-          </Button>
+          </Button> */}
+          <AddProductDialog
+            onProductCreated={(product) =>
+              setProducts((prev) => [product, ...prev])
+            }
+          />
         </div>
 
         {loading ? (

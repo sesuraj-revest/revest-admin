@@ -14,15 +14,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           if (!credentials?.email || !credentials?.password) {
             return null;
           }
-          console.log("first");
 
           const response = await authApi.login({
             email: credentials.email as string,
             password: credentials.password as string,
           });
-          console.log(response, "responseresponse");
 
-          if (response?.accessToken) {
+          if (response?.user) {
             // Return user with token attached for JWT callback
             return {
               ...response.user,
@@ -58,9 +56,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      console.log("Sessionupdate", session);
       if (token && session.user) {
-        // session.user.id = token.id as string;
+        session.user.id = token.id as string;
         // Add other properties to the session
         (session.user as any).roleId = token.roleId;
         (session.user as any).accessToken = token.accessToken;
@@ -72,5 +69,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     },
   },
-  secret: process.env.AUTH_SECRET || "sdfsdafvg",
+  secret: process.env.AUTH_SECRET as string,
 });

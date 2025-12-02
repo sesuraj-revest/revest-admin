@@ -32,6 +32,7 @@ export async function RegisterAction(credentials: any) {
     const data = await authApi.register(credentials);
     return data;
   } catch (error) {
+    console.error(error);
     if (error instanceof AuthError) {
       switch (error.type) {
         case "CredentialsSignin":
