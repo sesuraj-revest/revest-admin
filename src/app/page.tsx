@@ -58,7 +58,7 @@ export default function LoginPage() {
             Vendor Admin
           </h1>
           <p className="text-center text-muted-foreground mb-8">
-            Manage your hotels, restaurants & travel agencies
+            Manage your Products, Food Menu & Groceries
           </p>
 
           <Form {...form}>
